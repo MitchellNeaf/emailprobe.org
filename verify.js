@@ -2,23 +2,25 @@ async function checkEmail() {
     const email = document.getElementById("email").value.trim();
     const resultDiv = document.getElementById("result");
 
-    // Show spinner immediately
+    // Show spinner
     resultDiv.innerHTML = `<span class="spinner"></span> Checking...`;
 
+    // Prepare form data (no longer includes api_key here)
     const formData = new FormData();
     formData.append("email", email);
-    formData.append("api_key", "3b4d2d09-7484-46c7-8153-8e13279c06eb");
 
     const minDelay = ms => new Promise(res => setTimeout(res, ms));
-    const startTime = Date.now();
 
     try {
         const [res] = await Promise.all([
             fetch("https://fastemailcheck.com/api/verify_single", {
                 method: "POST",
-                body: formData
+                body: formData,
+                headers: {
+                    "X-API-Key": "3b4d2d09-7484-46c7-8153-8e13279c06eb"
+                }
             }),
-            minDelay(1500) // 🕒 Force wait at least 1.5 seconds
+            minDelay(1500)
         ]);
 
         const data = await res.json();
@@ -30,9 +32,9 @@ async function checkEmail() {
                 💬 <strong>Reason:</strong> ${data.reason}
             `;
         } else {
-            resultDiv.textContent = `❌ Error: ${data.detail || "Unknown error"}`;
+            resultDiv.innerHTML = `❌ Error: ${data.detail || "Something went wrong."}`;
         }
     } catch (err) {
-        resultDiv.textContent = "❌ Network error. Please try again.";
+        resultDiv.innerHTML = "❌ Network error. Please try again.";
     }
 }
