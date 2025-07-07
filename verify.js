@@ -1,13 +1,31 @@
+let latestEmail = "";
+
+// Triggered by the "Verify" button
 async function checkEmail() {
     const email = document.getElementById("email").value.trim();
+    if (!email) return;
+
+    latestEmail = email;
+
+    // Show the popup before running the actual check
+    document.getElementById("popup").classList.remove("hidden");
+}
+
+// Called when user clicks "No thanks"
+async function closePopup() {
+    document.getElementById("popup").classList.add("hidden");
+    await showEmailResult();
+}
+
+// Actual verification logic after popup is closed
+async function showEmailResult() {
     const resultDiv = document.getElementById("result");
 
     // Show spinner
     resultDiv.innerHTML = `<span class="spinner"></span> Checking...`;
 
-    // Prepare form data (no longer includes api_key here)
     const formData = new FormData();
-    formData.append("email", email);
+    formData.append("email", latestEmail);
 
     const minDelay = ms => new Promise(res => setTimeout(res, ms));
 
